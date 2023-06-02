@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Calculator of logical expressions</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            background-color: #f2f2f2;
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            line-height: 1.5;
+            margin: 0;
+            padding: 0;
+        }
+
+        body.dark-theme {
+            background-color: #333;
+            color: #fff;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .calculator {
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            padding: 25px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .calculator h1 {
+            font-size: 24px;
+            margin: 0 0 20px;
+            text-align: center;
+        }
+
+        .calculator input[type="text"] {
+            border: none;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            font-size: 16px;
+            margin-bottom: 20px;
+            padding: 10px;
+            width: 95%;
+        }
+
+        .calculator button {
+            background-color: lightcoral;
+            border: none;
+            border-radius: 5px;
+            color: #fff;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+            padding: 10px;
+            width: 66px;
+        }
+
+        .calculator button:hover {
+            background-color: blueviolet;
+        }
+
+
+        .calculator #result {
+            border: none;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            font-size: 16px;
+            margin-bottom: 20px;
+            padding: 10px;
+            text-align: center;
+            width: 95%;
+        }
+
+        .theme-button {
+            background-color: #333;
+            border: none;
+            border-radius: 5px;
+            color: #fff;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+            padding: 10px;
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+
+        }
+
+        .theme-button.dark-theme {
+            background-color: #fff;
+            color: #333;
+        }
+
+        .theme-button:hover {
+            background-color: grey;
+        }
+
+
+        @media screen and (min-width: 768px) {
+            .calculator {
+                margin: 0 auto;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="calculator">
+        <h1>Calculator of logical expressions</h1>
+        <input type="text" id="expression"
+               placeholder="Enter a Boolean expression">
+        <div>
+            <button onclick="insertText(' and ')" style="margin-bottom: 4%">
+                and
+            </button>
+            <button onclick="insertText(' or ')" style="margin-bottom: 4%">or
+            </button>
+            <button onclick="insertText(' not ')" style="margin-bottom: 4%">
+                not
+            </button>
+            <button onclick="insertText(' ( ')" style="margin-bottom: 4%">(
+            </button>
+            <button onclick="insertText(' ) ')" style="margin-bottom: 4%">)
+            </button>
+            <button onclick="insertText(' → ')" style="margin-bottom: 4%">→
+            </button>
+            <button onclick="insertText(' ⊕ ')" style="margin-bottom: 4%">⊕
+            </button>
+            <button onclick="insertText(' ~ ')" style="margin-bottom: 4%">~
+            </button>
+            <button onclick="insertText(' ≡ ')" style="margin-bottom: 4%">≡
+            </button>
+            <button onclick="insertText(' ↓ ')" style="margin-bottom: 4%">↓
+            </button>
+
+            <button onclick="calculate()" id="start"
+                    style="margin-bottom: 4%; width: 100%">Calculate
+            </button>
+        </div>
+        <input type="text" id="result" readonly>
+
+    </div>
+    <button class="theme-button" onclick="toggleTheme()">Toggle theme</button>
+</div>
+
+<script>
+
+
+    function insertText(text) {
+        var input = document.getElementById('expression');
+        var start = input.selectionStart;
+        var end = input.selectionEnd;
+        var value = input.value;
+        input.value = value.slice(0, start) + text + value.slice(end);
+        input.selectionStart = input.selectionEnd = start + text.length;
+        input.focus();
+    }
+
+    function calculate() {
+        var formData = new FormData();
+        var expression = document.getElementById('expression').value;
+        formData.append('expression', expression);
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '/calculate');
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                var result = JSON.parse(xhr.responseText);
+                document.getElementById('result').value = result.result;
+
+            } else {
+                alert('Ошибка ' + xhr.status);
+            }
+        };
+        xhr.send(formData);
+    }
+
+    function toggleTheme() {
+        var body = document.getElementsByTagName('body')[0];
+        var themeButton = document.querySelector('.theme-button');
+        body.classList.toggle('dark-theme');
+        themeButton.classList.toggle('dark-theme');
+    }
+
+
+</script>
+</body>
+</html>
